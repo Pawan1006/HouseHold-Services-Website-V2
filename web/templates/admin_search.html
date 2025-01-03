@@ -1,0 +1,255 @@
+{% extends "base.html" %} {% block title %}Admin Search{% endblock  %}
+
+{% block head %}
+    <!-- Link to custom CSS for search page -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='search.css') }}">
+{% endblock %}
+
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/admin/dashboard">Welcome! Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/admin/dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/admin/search">Search</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">
+                  Status
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" id="customer_status" href="/customer/status">Customer Status</a>
+                    <a class="dropdown-item" id="professional_status" href="/professional/status">Professional Status</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/admin/summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+{% block content %}
+<br>
+<div id="app">
+    <div :class="['alert-container', showAlert ? 'show' : '']">
+        <div v-if="errorMessage" class="alert alert-danger">
+            [[errorMessage]]
+            <button @click="errorMessage = ''" class="close-btn">X</button>
+        </div>
+        <div v-if="successMessage" class="alert alert-success">
+            [[successMessage]]
+            <button @click="successMessage = ''" class="close-btn">X</button>
+        </div>
+    </div> 
+<div class="search-container">
+    <h3>
+        Search:
+    </h3>
+    <form @submit.prevent="performSearch" class="d-flex align-items-center">
+        <label for="searchType">Search by</label>
+        <select id="searchType" v-model="searchType" class="form-select" aria-label="Search by">
+            <option value="" disabled>Select Search Type</option>
+            <option value="customer">Customer</option>
+            <option value="professional">Professional</option>
+            <option value="request">Request</option>
+            <option value="service">Service</option>
+        </select>
+        <input type="text" v-model="query" placeholder="Search...">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>    
+</div>
+<br>
+<br>
+<h3>Search Result</h3>
+<div v-if="searchPerformed">
+        <table class="table table-striped" v-if="results.length > 0">
+            <thead>
+                <tr>
+                    <th v-for="header in headers" :key="header">[[ header ]]</th>
+                  </tr>
+            </thead>
+            <tbody>
+                <tr v-for="result in results" :key="result.id">
+                    <!-- For Customers -->
+                    <td v-if="searchType === 'customer'">[[result.id]]</td>
+                    <td v-if="searchType === 'customer'">[[result.full_name]]</td>
+                    <td v-if="searchType === 'customer'">[[result.pincode]]</td>
+                    <td v-if="searchType === 'customer'">
+                        [[result.status]]
+                        <button 
+                            v-if="result.status === 'active'" 
+                            @click="blockCustomer(result.id)" 
+                            class="btn btn-danger btn-sm mx-1">
+                            Block
+                        </button>
+                        <button 
+                            v-if="result.status === 'blocked'" 
+                            @click="unblockCustomer(result.id)" 
+                            class="btn btn-warning btn-sm mx-1">
+                            Unblock
+                        </button>
+                        <button 
+                            @click="deleteCustomer(result.id)" 
+                            class="btn btn-dark btn-sm mx-1">
+                            Remove
+                        </button>
+                    </td>
+                    <!-- For Professionals -->
+                    <td v-if="searchType === 'professional'">[[result.id]]</td>
+                    <td v-if="searchType === 'professional'">[[result.full_name]]</td>
+                    <td v-if="searchType === 'professional'">[[result.service]]</td>
+                    <td v-if="searchType === 'professional'">[[result.experience]]</td>
+                    <td v-if="searchType === 'professional'">
+                        [[result.status]]
+                        <button 
+                            v-if="result.status === 'approved'" 
+                            @click="blockProf(result.id)" 
+                            class="btn btn-danger btn-sm mx-1">
+                            Block
+                        </button>
+                        <button 
+                            v-if="result.status === 'blocked'" 
+                            @click="unblockProf(result.id)" 
+                            class="btn btn-warning btn-sm mx-1">
+                            Unblock
+                        </button>
+                        <button 
+                            @click="deleteProf(result.id)" 
+                            class="btn btn-dark btn-sm mx-1">
+                            Remove
+                        </button>
+                    </td>
+                    <!-- For Service Requests -->
+                    <td v-if="searchType === 'request'">[[result.id]]</td>
+                    <td v-if="searchType === 'request'">[[result.service.service]]</td>
+                    <td v-if="searchType === 'request'">[[result.professional.full_name]]</td>
+                    <td v-if="searchType === 'request'">[[result.customer.full_name]]</td>
+                    <td v-if="searchType === 'request'">[[formatDate(result.date_of_request)]]</td>
+                    <td v-if="searchType === 'request'">[[result.service_status]]</td>
+                    <!-- For Service Details -->
+                    <td v-if="searchType === 'service'">[[result.id]]</td>
+                    <td v-if="searchType === 'service'">[[result.service]]</td>
+                    <td v-if="searchType === 'service'">[[result.price]]</td>
+                    <td v-if="searchType === 'service'">[[result.desc]]</td>
+                </tr>
+            </tbody>
+        </table>
+        <div v-else class="alert alert-warning">No results found for your search.</div>
+    </div>
+    <div v-else class="alert alert-dark">You have not searched anything yet.</div>
+</div>
+<br>
+<br>
+<script>
+    new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            successMessage: "",
+            errorMessage: "",
+            searchType: '',
+            query: '',
+            results: [],
+            searchPerformed: false
+        },
+        computed: {
+            headers() {
+                if (this.searchType === 'customer') return ['Customer Id', 'Name', 'Pincode', 'Status'];
+                if (this.searchType === 'professional') return ['Professional Id', 'Name', 'Service', 'Experience', 'Status'];
+                if (this.searchType === 'request') return ['Request Id', 'Service', 'Professional', 'Customer', 'Date', 'Status'];
+                if (this.searchType === 'service') return ['Service Id', 'Service Name', 'Price', 'Description'];
+                return [];
+            },
+            showAlert() {
+                return this.errorMessage || this.successMessage;
+            }
+        },
+        watch: {
+        searchType(newType, oldType) {
+            this.results = [];
+            this.searchPerformed = false;
+        }
+        },
+        methods: {
+            formatDate(date){
+                return new Date(date).toLocaleDateString("en-GB",{day: "2-digit", month:"2-digit", year:"numeric", hour:"2-digit",minute:"2-digit"});
+            },
+            performSearch() {
+                if (!this.searchType) return;
+                const queryParam = this.query ? `&query=${encodeURIComponent(this.query)}` : '';
+                fetch(`/api/admin/search?search_type=${encodeURIComponent(this.searchType)}${queryParam}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.results = data.results;
+                        this.searchPerformed = true;
+                        this.flashMessages = JSON.parse('{{ get_flashed_messages(with_categories=True) | tojson }}');
+                        this.flashMessages.forEach(([category, message]) => {
+                        if (category === "success") this.successMessage = message;
+                        if (category === "error") this.errorMessage = message;    
+                        });
+                    });
+                },
+                blockCustomer(resultId) {
+                    fetch(`/admin/search/block/customer/${resultId}?search_type=${encodeURIComponent(this.searchType)}&query=${encodeURIComponent(this.query)}`, {
+                        method: 'POST',
+                    })
+                    .then(() => {
+                        this.performSearch();
+                    });
+                },
+                unblockCustomer(resultId) {
+                    fetch(`/admin/search/unblock/customer/${resultId}?search_type=${encodeURIComponent(this.searchType)}&query=${encodeURIComponent(this.query)}`, {
+                        method: 'POST',
+                    })
+                    .then(() => {
+                        this.performSearch();
+                    });
+                },
+                deleteCustomer(resultId) {
+                    fetch(`/admin/search/delete/customer/${resultId}?search_type=${encodeURIComponent(this.searchType)}&query=${encodeURIComponent(this.query)}`, {
+                        method: 'POST',
+                    })
+                    .then(response => {
+                        if (response.ok) this.performSearch();
+                    });
+                },
+                blockProf(resultId) {
+                    fetch(`/admin/search/block/professional/${resultId}?search_type=${encodeURIComponent(this.searchType)}&query=${encodeURIComponent(this.query)}`, {
+                        method: 'POST',
+                    })
+                    .then(() => {
+                        this.performSearch();
+                    });
+                },
+                unblockProf(resultId) {
+                    fetch(`/admin/search/unblock/professional/${resultId}?search_type=${encodeURIComponent(this.searchType)}&query=${encodeURIComponent(this.query)}`, {
+                        method: 'POST',
+                    })
+                    .then(() => {
+                        this.performSearch();
+                    });
+                },
+                deleteProf(resultId) {
+                    fetch(`/admin/search/delete/professional/${resultId}?search_type=${encodeURIComponent(this.searchType)}&query=${encodeURIComponent(this.query)}`, {
+                        method: 'POST',
+                    })
+                    .then(response => {
+                        if (response.ok) this.performSearch();
+                    });
+                }
+            }
+        });
+</script>
+{% endblock %}

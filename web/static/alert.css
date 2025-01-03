@@ -1,0 +1,59 @@
+/* Container for alerts that will be displayed at the top of the screen */
+.alert-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 1050;
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.5s ease-in-out; /* Smooth fade-in transition */
+}
+
+/* Individual alert style */
+.alert {
+    pointer-events: auto;
+    margin: 10px;
+    padding: 20px;
+    background-color: rgb(28, 103, 146); /* Red background for error */
+    color: rgb(255, 255, 255);
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: flex;
+    justify-content: space-between; /* Space out content inside alert */
+    align-items: center;
+}
+
+/* Show class to make the alert visible */
+.alert-container.show {
+    opacity: 1; /* Makes the alert box visible */
+}
+
+
+.alert-danger {
+    background-color: red; /* Red for error messages */
+}
+
+.alert-success {
+    background-color: rgb(74, 153, 74); /* Green for success messages */
+}
+
+/* Close button style */
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 15px;
+}
+
+/* Close button hover effect */
+.close-btn:hover {
+    color: #ccc;
+}

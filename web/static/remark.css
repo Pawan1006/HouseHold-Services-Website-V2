@@ -1,0 +1,85 @@
+/* General styles */
+body {
+    background-color: #f8f9fa; /* Light background */
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    max-width: 800px; /* Limit container width */
+    margin: auto;
+    padding: 20px;
+}
+
+/* Card styles */
+.card {
+    border: 1px solid #e0e0e0; /* Light gray border */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    background-color: #ffffff; /* White background */
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* Heading styles */
+h3 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #343a40; /* Darker text color */
+}
+
+h4 {
+    font-size: 20px;
+    color: #6c757d; /* Muted color */
+}
+
+/* Label styles */
+label {
+    font-weight: bold;
+    color: #495057; /* Darker muted color */
+}
+
+/* Text styles */
+.text-muted {
+    color: #6c757d; /* Muted text color */
+}
+
+/* Button styles */
+.btn {
+    border-radius: 5px; /* Slightly rounded corners */
+    font-weight: bold; /* Bold text */
+    padding: 10px 15px; /* Padding for buttons */
+    transition: background-color 0.3s; /* Smooth background transition */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Bootstrap primary color */
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker on hover */
+}
+
+/* Radio button styles */
+.form-group div {
+    display: flex;
+    justify-content: space-around; /* Distribute radio buttons evenly */
+}
+
+input[type="radio"] {
+    margin-right: 5px; /* Space between radio button and label */
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    .row {
+        flex-direction: column; /* Stack columns on small screens */
+    }
+
+    .col-md-4 {
+        width: 100%; /* Full width for small screens */
+        margin-bottom: 15px; /* Space between stacked items */
+    }
+}

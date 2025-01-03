@@ -1,0 +1,140 @@
+{% extends "base.html" %} {% block title %}Service Remark{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='remark.css') }}">
+{% endblock  %}
+
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/customer-dashboard">Welcome! {{ user.full_name }}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/customer-dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/user-search">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/user-summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<br>
+<div id="app" class="container mt-4">
+    <h3 class="text-center mb-4">Service Remark</h3>
+    <h4 class="text-center mb-4">Service id : [[requests.id]]</h4>
+    <div class="card">
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <label class="font-weight-bold">Professional Id:</label>
+                    <p class="text-muted">[[requests.professional.id]]</p>
+                </div>
+                <div class="col-md-4"> <!-- Adjusted width for balance -->
+                    <label class="font-weight-bold">Contact:</label>
+                    <p class="text-muted">[[requests.professional.email]]</p>
+                </div>
+                <div class="col-md-4"> <!-- Fixed the syntax error here -->
+                    <label class="font-weight-bold">Name:</label>
+                    <p class="text-muted">[[requests.professional.full_name]]</p>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <label class="font-weight-bold">Service Name:</label>
+                    <p class="text-muted">[[requests.service.service]]</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="font-weight-bold">Price:</label>
+                    <p class="text-muted">Rs. [[requests.professional.price]]</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="font-weight-bold">Details:</label>
+                    <p class="text-muted">[[requests.professional.desc]]</p>
+                </div>
+            </div>
+            <div>
+                <form @submit.prevent="updateRemark">
+                    <div class="form-group">
+                        <label>Service Rating</label>
+                        <div>
+                            <label v-for="i in 5" :key="i" :for="'rating' + i">
+                                <input
+                                    type="radio"
+                                    :id="'rating' + i"
+                                    name="rating"
+                                    :value="i"
+                                    v-model="rating"
+                                /> [[i]]
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="remark">Remark (if any)</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="remark"
+                            v-model="remark"
+                            placeholder="Add your remark"
+                        />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-primary" @click="redirectToDashboard">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<script>
+    new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            requests: JSON.parse(`{{ requests | tojson }}`),
+            professional: JSON.parse(`{{ requests.professional | tojson }}`),
+            service: JSON.parse(`{{ requests.service | tojson }}`),
+            rating: "{{ requests.rating or 'null' }}",
+            remark: "{{ requests.remarks or 'null' }}"
+        },
+        methods: {
+            updateRemark() {
+                const payload = {
+                    rating: this.rating || null,
+                    remark: this.remark || null
+                };
+                fetch(`/update_remark/${this.requests.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.redirectToDashboard();
+                    }
+                });
+            },
+            redirectToDashboard() {
+                window.location.href = '/customer-dashboard';
+            },
+        },
+    });
+</script>
+{% endblock %}
+

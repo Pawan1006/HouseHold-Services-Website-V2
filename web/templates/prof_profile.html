@@ -1,0 +1,187 @@
+{% extends "base.html" %} {% block title %}Profile{% endblock  %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+{% endblock %}
+
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/professional-dashboard">Welcome! {{profiles.full_name}}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/professional-dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/prof-search">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/prof-summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+{% block content %}
+<!-- Profile of the Professional -->
+<div id="app">
+    <div v-if="errorMessage" class="alert alert-danger" role="alert">
+        [[ errorMessage ]]
+        <button @click="errorMessage = ''" class="close-btn">X</button>
+    </div>
+<form @submit.prevent="updateProfile">
+    <h3 align="center">Profile</h3>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input
+            type="email"
+            class="form-control"
+            id="email"
+            v-model="email"
+            placeholder="Enter email"
+        />
+    </div>
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input
+            type="text"
+            class="form-control"
+            id="name"
+            v-model="name"
+            placeholder="Enter name"
+        />
+    </div>
+    <div class="form-group">
+        <label for="service">Service Name</label>
+        <input
+            type="text"
+            class="form-control"
+            id="service"
+            v-model="service"
+            placeholder="Enter service"
+        />
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input
+            type="number"
+            class="form-control"
+            id="price"
+            v-model="price"
+            placeholder="Base price is Rs.{{service.price}}. You cannot offer price less than this."
+        />
+    </div> 
+    <div class="form-group">
+        <label for="experience">Experience(in years)</label>
+        <input
+            type="number"
+            class="form-control"
+            id="experience"
+            v-model="experience"
+            placeholder="Enter experience"
+        />
+    </div> 
+    <div class="form-group">
+        <label for="desc">Details</label>
+        <input
+            type="text"
+            class="form-control"
+            id="desc"
+            v-model="desc"
+            placeholder="Enter details"
+        />
+    </div> 
+    <div class="form-group">
+        <label for="address">Address</label>
+        <input
+            type="text"
+            class="form-control"
+            id="address"
+            v-model="address"
+            placeholder="Enter address"
+        />
+    </div>
+    <div class="form-group">
+        <label for="pincode">Pincode</label>
+        <input
+            type="number"
+            class="form-control"
+            id="pincode"
+            v-model="pincode"
+            placeholder="Enter pincode"
+        />
+    </div>
+    <div class="form-group">
+        <label for="pdf">Uploaded PDF</label>
+        <div v-if="pdf_file_path">
+            <a :href="'/static/uploads/' + pdf_file_path" target="_blank" class="btn btn-outline-dark btn-sm">View PDF</a>
+        </div>
+    </div>    
+    <button type="submit" class="btn btn-primary">Update</button>
+    <button type="button" class="btn btn-primary" @click="redirectToDashboard">Close</button>
+</form>
+</div>
+<script>
+    new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+                email: "{{ profiles.email }}",
+                name: "{{ profiles.full_name }}",
+                service: "{{ profiles.service }}",
+                price: "{{ profiles.price }}",
+                experience: "{{ profiles.experience }}",
+                desc: "{{ profiles.desc }}",
+                address: "{{ profiles.address }}",
+                pincode: "{{ profiles.pincode }}",
+                pdf_file_path: "{{ profiles.pdf_file_path }}",
+                servicePrice: "{{ service.price }}",
+                errorMessage: ''
+        },
+        methods: {
+            updateProfile() {
+                if (!this.email || !this.name || !this.experience || !this.address || !this.pincode || !this.service || !this.price) {
+                    this.errorMessage = "Fields can not be empty.";
+                    return;
+                }
+                fetch('/prof-profile/{{ profiles.id }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: this.email,
+                        name: this.name,
+                        service: this.service,
+                        price: this.price,
+                        experience: this.experience,
+                        desc: this.desc,
+                        address: this.address,
+                        pincode: this.pincode,
+                        pdf_file_path: this.pdf_file_path
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.redirectToDashboard();
+                    }else{
+                        this.errorMessage = data.message;
+                    }
+                });
+                },
+                redirectToDashboard() {
+                    window.location.href = '/professional-dashboard';
+                }
+        }
+    });
+</script>
+{% endblock %}

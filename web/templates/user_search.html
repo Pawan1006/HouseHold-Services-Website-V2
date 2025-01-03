@@ -1,0 +1,142 @@
+{% extends "base.html" %} {% block title %}User Search{% endblock  %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='search.css') }}">
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/customer-dashboard">Welcome! {{ user.full_name }}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/customer-dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/user-search">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/user-summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+
+{% block content %}
+<br>
+<div id="app">
+<div class="search-container">
+    <h3>
+        Search:
+    </h3>
+    <form @submit.prevent="performSearch" class="d-flex align-items-center">
+        <label for="searchType">Search by</label>
+        <select class="form-select" aria-label="Default" v-model="searchType" id="searchType">
+            <option value="" disabled>Search by</option>
+            <option value="pincode">Pincode</option>
+            <option value="requests">Requests</option>
+            <option value="services">Services</option>
+        </select>
+        <input type="text" v-model="query" placeholder="Search...">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>    
+</div>
+<br>
+<br>
+<h3>Search Result</h3>
+    <div v-if="searchPerformed && results.length > 0">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <template v-if="searchType === 'requests'">
+                        <th>Service ID</th>
+                        <th>Professional Name</th>
+                        <th>Service</th>
+                        <th>Details</th>
+                        <th>Price</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                    </template>
+                    <template v-else>
+                        <th>Professional ID</th>
+                        <th>Professional Name</th>
+                        <th>Service Name</th>
+                        <th>Details</th>
+                        <th>Price</th>
+                        <th>Rating</th>
+                    </template>
+                </tr>
+            </thead>
+            <tbody>
+                <template v-for="result in results" :key="result.id">
+                    <tr v-if="searchType === 'requests'">
+                        <td>[[ result.id ]]</td>
+                        <td>[[ result.professional.full_name ]]</td>
+                        <td>[[ result.professional.service ]]</td>
+                        <td>[[ result.professional.desc ]]</td>
+                        <td>[[ result.professional.price ]]</td>
+                        <td>[[ result.rating ]]</td>
+                        <td>[[ result.service_status ]]</td>
+                    </tr>
+                    <tr v-else>
+                        <td>[[ result.id ]]</td>
+                        <td>[[ result.full_name ]]</td>
+                        <td>[[ result.service ]]</td>
+                        <td>[[ result.desc ]]</td>
+                        <td>[[ result.price ]]</td>
+                        <td>[[ result.average_rating ? result.average_rating.toFixed(2) : 'N/A' ]]</td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+    <div v-else class="alert alert-warning" role="alert">
+        No results found for your search.
+    </div>
+    <div v-else>
+    <div class="alert alert-dark" role="alert">
+        You have not searched anything yet.
+    </div> 
+    </div>
+</div>
+<br><br>
+<script>
+    new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            searchType: '',
+            query: '',
+            results: [],
+            searchPerformed: false
+        },
+        watch: {
+        searchType(newType, oldType) {
+            this.results = [];
+            this.searchPerformed = false;
+        }
+        },
+        methods: {
+
+            performSearch() {
+                if (!this.searchType) return;
+                const queryParam = this.query ? `&query=${encodeURIComponent(this.query)}` : '';
+                fetch(`/api/user/search?search_type=${encodeURIComponent(this.searchType)}${queryParam}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        this.results = data.results;
+                        this.searchPerformed = true;
+                    });
+                }
+            }
+        });
+</script>
+{% endblock %}

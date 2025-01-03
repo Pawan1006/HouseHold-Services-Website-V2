@@ -1,0 +1,220 @@
+{% extends "base.html" %} {% block title %}Admin Dashboard{% endblock  %}
+
+{% block navbar %}
+<!-- Navigation bar specific to the admin dashboard -->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/admin/dashboard">Welcome! Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/admin/dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/admin/search">Search</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">
+                  Status
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" id="customer_status" href="/customer/status">Customer Status</a>
+                    <a class="dropdown-item" id="professional_status" href="/professional/status">Professional Status</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/admin/summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+{% block content %}
+<div id="app">
+    <div :class="['alert-container', showAlert ? 'show' : '']">
+        <div v-if="errorMessage" class="alert alert-danger">
+            [[errorMessage]]
+            <button @click="errorMessage = ''" class="close-btn">X</button>
+        </div>
+        <div v-if="successMessage" class="alert alert-success">
+            [[successMessage]]
+            <button @click="successMessage = ''" class="close-btn">X</button>
+        </div>
+    </div> 
+<br>
+<h3>Services</h3>
+<!-- Check if there are no services available -->
+    <div v-if="services.length === 0" class="alert alert-dark" role="alert">
+        Add your first service.
+    </div> 
+    <!-- Display the list of services in a table -->
+    <table v-else class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Service Id</th>
+            <th scope="col">Service Name</th>
+            <th scope="col">Base Price</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <!-- Iterate through each service and display its details -->
+            <tr v-for="service in services" :key="service.id">
+                <th scope="row">
+                    <a :href="'/service/details/' + service.id" style="text-decoration: none; color: inherit;">
+                        [[service.id]]
+                    </a>
+                </th>
+                <td>[[ service.service ]]</td>
+                <td>[[ service.price ]]</td>
+                <td>
+                    <a :href="'/admin/update/' + service.id" class="btn btn-info btn-sm mx-1">Edit</a>
+                    <a :href="'/admin/deleteService/' + service.id" class="btn btn-danger btn-sm mx-1">Remove</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</br>
+    <div>
+        <button id="serviceAdd" class="btn btn-primary" @click="addService">+ Add new service</button>
+    </div>
+<br>
+<h3>Professionals Request</h3>
+    <div v-if="pendingProfessionals.length === 0" class="alert alert-dark" role="alert">
+        There is no request
+    </div>
+
+    <!-- Display the list of pending professionals in a table -->
+    <table v-else class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Professional Id</th>
+            <th scope="col">Professional Name</th>
+            <th scope="col">Experience(in years)</th>
+            <th scope="col">Service</th>
+            <th scope="col">PDF</th>
+            <th scope="col">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <!-- Iterate through each pending professional and display their details -->
+            <tr v-for="prof in pendingProfessionals" :key="prof.id">
+                <th scope="row">
+                    <a :href="'/professional/details/' + prof.id" style="text-decoration: none; color: inherit;">
+                        [[ prof.id ]]
+                    </a>
+                </th>
+                <td>[[prof.full_name]]</td>
+                <td>[[prof.experience]]</td>
+                <td>[[prof.service]]</td>
+                <td>
+                    <a v-if="prof.pdf_file_path" :href="'/static/uploads/' + prof.pdf_file_path" target="_blank" class="btn btn-outline-secondary btn-sm">View PDF</a>
+                </td>                             
+                <td>
+                    <a :href="'/admin/approve/' + prof.id" class="btn btn-success btn-sm mx-1">Approve</a>
+                    <a :href="'/admin/reject/' + prof.id" class="btn btn-danger btn-sm mx-1">Reject</a>
+                    <a :href="'/admin/delete/professional/' + prof.id" class="btn btn-warning btn-sm mx-1">Remove</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br><br>
+
+    <h3>Service Requests</h3>
+    <div v-if="serviceRequests.length === 0" class="alert alert-dark" role="alert">
+        There is no service request.
+    </div>
+    <!-- Display the list of service requests in a table -->
+    <table v-else class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Request Id</th>
+                <th scope="col">Service Name</th>
+                <th scope="col">Professional</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Requested Date</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="request in serviceRequests" :key="request.id">
+                <th scope="row">
+                    <a :href="'/request/details/' + request.id" style="text-decoration: none; color: inherit;">
+                        [[ request.id ]]
+                    </a>
+                </th>
+                <td>[[request.service.service]]</td>
+                <td>[[request.professional.full_name]]</td>
+                <td>[[request.customer.full_name]]</td>
+                <td>[[formatDate(request.date_of_request)]]</td>
+                <td>[[formatStatus(request.service_status)]]</td>
+            </tr>
+        </tbody>
+    </table>
+<br>
+<div>
+    <a id="home" href="/export" class="btn btn-primary btn">CSV Export</a>
+</div>
+</div>
+<script>
+    new Vue({
+        delimiters: ['[[', ']]'],
+        el: "#app",
+        data: {
+            services: [],
+            pendingProfessionals: [],
+            serviceRequests: [],
+            successMessage: "",
+            errorMessage: "",
+            flashMessages: JSON.parse('{{ get_flashed_messages(with_categories=True) | tojson }}')
+        },
+        computed: {
+            showAlert() {
+                return this.errorMessage || this.successMessage;
+            }
+        },
+        methods: {
+            addService(){
+                window.location.href = "/service_add";
+            },
+            formatDate(date){
+                return new Date(date).toLocaleDateString("en-GB",{day: "2-digit", month:"2-digit", year:"numeric", hour:"2-digit",minute:"2-digit"});
+            },
+            formatStatus(status){
+                switch(status){
+                    case "pending": return "Requested";
+                    case "accepted": return "Accepted";
+                    case "rejected": return "Not Accepted";
+                    case "closed": return "Closed";
+                    case "cancelled": return "Cancelled";
+                    default: return status;
+                }
+            }
+            },
+        mounted(){
+            this.flashMessages = JSON.parse('{{ get_flashed_messages(with_categories=True) | tojson }}');
+                this.flashMessages.forEach(([category, message]) => {
+                if (category === "success") this.successMessage = message;
+                if (category === "error") this.errorMessage = message;
+                });
+            
+            fetch("/api/admin/data")
+                .then(response => response.json())
+                .then(data => {
+                this.services = data.services;
+                this.pendingProfessionals = data.professionals;
+                this.serviceRequests = data.requests;
+            });
+        }
+    });
+</script>
+
+<br>
+{% endblock %}

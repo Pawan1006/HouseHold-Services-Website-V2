@@ -1,0 +1,41 @@
+/* summary.css */
+
+/* Styles for the main heading of the summary page */
+.summary-page h2 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2rem;
+    color: #b200f9;
+}
+
+/* Styles for flex container alignment */
+.summary-page .d-flex {
+    justify-content: center;
+}
+
+/* Styles for images within the summary page */
+.summary-page .img-fluid {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
+}
+
+/* Hover effect for images to slightly enlarge */
+.summary-page .img-fluid:hover {
+    transform: scale(1.05);
+}
+
+/* Styles for horizontal spacing between elements */
+.summary-page .mx-2 {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* Responsive styles for smaller screens */
+@media (max-width: 768px) {
+    .summary-page .img-fluid {
+        width: 90%;
+    }
+}

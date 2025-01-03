@@ -1,0 +1,44 @@
+/* services.css */
+
+.text-right {
+    margin-bottom: 20px; /* Adds spacing below the Profile button */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Primary button color */
+    border-color: #007bff;
+    padding: 10px 15px; /* Adjusts button size */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: scale(1.05); /* Slight scale on hover */
+}
+
+.alert {
+    margin-top: 20px; /* Adds spacing above the alert */
+    font-size: 1.1em; /* Increases font size for readability */
+    border-radius: 5px; /* Rounded corners */
+    padding: 15px; /* Increases padding for a better look */
+}
+
+.btn {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Adds subtle shadow */
+}
+
+h3 {
+    margin-top: 30px; /* Adds space above the Services Available heading */
+    color: #333; /* Dark color for better readability */
+    font-weight: bold; /* Bold heading */
+}
+.alert {
+    margin-top: 0; /* Remove margin above alerts */
+    padding: 10px; /* Optional: Adjust padding for better spacing */
+}
+/* Add this class for flash messages */
+.flash-message {
+    margin-top: 0; /* Ensure there's no margin above */
+    padding: 0.5rem; /* Adjust padding as needed */
+}

@@ -1,0 +1,84 @@
+/* styles.css */
+
+/* Basic styling for the body */
+body {
+    background-color: #f8f9fa; /* Light background */
+    font-family: 'Arial', sans-serif; /* Clean font style */
+}
+
+/* Container for forms and other elements */
+.container {
+    max-width: 600px; /* Limit the width */
+    margin: 50px auto; /* Center the container */
+    padding: 30px; /* Padding around the container */
+    background-color: #ffffff; /* White background for form */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+}
+
+/* Styles for headings */
+h3 {
+    text-align: center; /* Centered heading */
+    color: #343a40; /* Darker color for the heading */
+    margin-bottom: 30px; /* Space below heading */
+}
+
+/* Styles for form groups */
+.form-group {
+    margin-bottom: 20px; /* Spacing between form groups */
+}
+
+/* Styles for labels */
+label {
+    font-weight: bold; /* Bold labels */
+    color: #495057; /* Darker color for labels */
+}
+
+/* Styles for input fields */
+.form-control {
+    border: 1px solid #ced4da; /* Light border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px; /* Padding inside input fields */
+}
+
+/* Styles for input fields when focused */
+.form-control:focus {
+    border-color: #007bff; /* Blue border on focus */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Shadow on focus */
+}
+
+/* Base styles for buttons */
+.btn {
+    border-radius: 5px; /* Rounded buttons */
+    padding: 10px; /* Padding for buttons */
+    width: 15%; /* Full width buttons */
+    margin-top: 10px; /* Space between buttons */
+}
+
+/* Styles for primary buttons */
+.btn-primary {
+    background-color: #007bff; /* Primary color */
+    border: none; /* Remove border */
+}
+
+/* Hover effect for primary buttons */
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Styles for secondary buttons */
+.btn-secondary {
+    background-color: #6c757d; /* Secondary color */
+    border: none; /* Remove border */
+}
+
+/* Hover effect for secondary buttons */
+.btn-secondary:hover {
+    background-color: #5a6268; /* Darker shade on hover */
+}
+
+/* Styles for generic buttons */
+button[type="button"] {
+    width: auto; /* Allow button to auto size */
+    margin-top: 10px; /* Space above */
+}

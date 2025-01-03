@@ -1,0 +1,148 @@
+{% extends "base.html" %} {% block title %}User Dashboard{% endblock  %}
+
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='services.css') }}">
+{% endblock %}
+
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/customer-dashboard">Welcome! {{ user.full_name }}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/customer-dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/user-search">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/user-summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+{% block content %}
+<div id="app">
+    <br>
+        <div :class="['alert-container', showAlert ? 'show' : '']">
+            <div v-if="errorMessage" class="alert alert-danger">
+                [[errorMessage]]
+                <button @click="errorMessage = ''" class="close-btn">X</button>
+            </div>
+            <div v-if="successMessage" class="alert alert-success">
+                [[successMessage]]
+                <button @click="successMessage = ''" class="close-btn">X</button>
+            </div>
+        </div> 
+    <div class="text-right">
+        <a href="/user-profile/{{u_id}}" class="btn btn-primary">Profile</a>
+    </div>
+    <h3>Services Available</h3>
+    </br>
+        <div v-if="services.length === 0" class="alert alert-dark" role="alert">
+            There is no service available.
+        </div> 
+        <div v-else>
+            <a v-for="service in services" :key="service.id" :href="'/show-services/' + service.id" class="btn btn-primary mx-1">
+                [[service.service]]
+            </a>
+        </div>
+
+    <br><br>
+    <h3>Service History</h3>
+    <div v-if="requests.length > 0">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Service Id</th>
+                <th scope="col">Service Name</th>
+                <th scope="col">Professional Name</th>
+                <th scope="col">Requested Date</th>
+                <th scope="col">Closed Date (if Closed)</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="request in requests" :key="request.id">
+                <th scope="row">[[request.id]]</th>
+                <td>[[request.service.service]]</td>
+                <td>[[request.professional.full_name]]</td>
+                <td>[[formatDate(request.date_of_request)]]</td>
+                <td>
+                    [[ request.date_of_completion 
+                            ? formatDate(request.date_of_completion) 
+                            : 'Not Closed' ]]
+                </td>
+                <td>
+                    <div v-if="request.service_status === 'pending'">
+                        Pending
+                        <form :action="'/cancel_request/' + request.id" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm mx-1">Cancel</button>
+                        </form>
+                    </div>
+                    <div v-else-if="request.service_status === 'cancelled'">Cancelled</div>
+                    <div v-else-if="request.service_status === 'accepted'">
+                        Accepted
+                        <a :href="'/close_service/' + request.id" class="btn btn-warning btn-sm mx-1" style="display:inline;">Close it</a>
+                    </div>
+                    <div v-else-if="request.service_status === 'closed'">
+                        Closed
+                        <a :href="'/update_remark/' + request.id" class="btn btn-warning btn-sm mx-1" style="display:inline;">Edit</a>
+                    </div>
+                    <div v-else-if="request.service_status === 'rejected'">Rejected</div>
+                </td>
+            </tr>
+        </tbody> 
+    </table>
+    </div>
+    <div v-else class="alert alert-dark" role="alert">
+        No history, Book your first service.
+    </div> 
+</div>
+<script>
+    new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            user: ('{{ user | tojson }}'),
+            services: JSON.parse('{{ services | tojson }}'),
+            requests: JSON.parse('{{ requests | tojson }}'),
+            successMessage: '',
+            errorMessage: ''
+        },
+        computed: {
+            showAlert() {
+                return this.errorMessage || this.successMessage;
+            }
+        },
+        mounted(){
+            this.flashMessages = JSON.parse('{{ get_flashed_messages(with_categories=True) | tojson | safe }}');
+            this.flashMessages.forEach(([category, message]) => {
+            if (category === "success") this.successMessage = message;
+            if (category === "error") this.errorMessage = message;
+            });
+        },
+        methods: {
+            formatDate(date) {
+                return new Date(date).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}

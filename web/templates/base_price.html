@@ -1,0 +1,30 @@
+{% extends "base.html" %} {% block title %}Base Price List{% endblock %}
+
+{% block head %}
+<!-- Link to the CSS file for styling the base price page -->
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+{% endblock %}
+
+
+{% block content %}
+<!-- Container for the Base Prices -->
+<div class="login-container">
+<h3 align="center">Base Prices</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Base Price (Rs.)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for service in services %}
+                <tr>
+                    <td>{{ service.service }}</td>
+                    <td>{{ service.price }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

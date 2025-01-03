@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block title %}Add Service{% endblock  %}
+
+{% block navbar %}
+<!-- Navigation bar specific to the admin dashboard -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/admin/dashboard">Welcome! Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/admin/dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/admin/search">Search</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">
+                  Status
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" id="customer_status" href="/customer/status">Customer Status</a>
+                    <a class="dropdown-item" id="professional_status" href="/professional/status">Professional Status</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/admin/summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+{% block content %}
+<div id="app">
+    <div v-if="errorMessage" class="alert alert-danger" role="alert">
+        [[ errorMessage ]]
+        <button @click="errorMessage = ''" class="close-btn">X</button>
+    </div>
+    
+    <!-- Form for adding a new service -->
+    <form @submit.prevent="submitService">
+        <h3 align="center">Add Service</h3>
+        <div class="form-group">
+            <label for="service">Service Name</label>
+            <input
+                type="text"
+                class="form-control"
+                id="service"
+                v-model="service"
+                placeholder="Enter service"
+            />
+        </div>
+        <div class="form-group">
+            <label for="desc">Description</label>
+            <input
+                type="text"
+                class="form-control"
+                id="desc"
+                v-model="desc"
+                placeholder="Enter description"
+            />
+        </div>
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input
+                type="number"
+                class="form-control"
+                id="price"
+                v-model="price"
+                placeholder="Enter price"
+                min="0"
+            />
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+        <button type="button" class="btn btn-primary" @click="redirectToDashboard">Close</button>
+    </form>
+</div>
+
+<script src="{{ url_for('static', filename='service_add.js') }}"></script>
+{% endblock %}

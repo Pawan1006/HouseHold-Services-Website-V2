@@ -1,0 +1,29 @@
+{% extends "base.html" %} {% block title %}Rejected{% endblock  %}
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Welcome! Professional</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+{% block content %}
+    <div class="alert alert-info" role="alert">
+        <h1>Your account request is REJECTED.</h1>
+        <p>You can resend the request by click on the "Resend Registration Request"</p>
+        <form action="/resend" method="POST">
+            <input type="hidden" name="email" value="{{ prof.email }}">
+            <input type="hidden" name="password" value="{{ prof.password }}">
+            <button type="submit" class="btn btn-outline-dark btn-sm mx-1">Resend Registration Request</button>
+        </form>
+    </div>
+{% endblock %}

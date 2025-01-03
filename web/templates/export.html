@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        #export-csv-btn, #back-btn {
+            background-color: #4CAF50; /* Green background */
+            color: white; /* White text */
+            padding: 15px 32px; /* Padding inside button */
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 10px; /* Space between buttons */
+        }
+
+        #export-csv-btn:hover, #back-btn:hover {
+            background-color: #45a049; /* Darker green when hovered */
+        }
+
+        #status-message {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Export CSV</h1>
+        <button id="export-csv-btn">Export Service Requests CSV</button>
+        <button id="back-btn" onclick="window.location.href='/admin/dashboard'">Go Back to Admin Dashboard</button>
+        <p id="status-message"></p>
+    </div>
+
+    <script>
+        // Trigger CSV export task when button is clicked
+        document.getElementById("export-csv-btn").addEventListener("click", function () {
+            axios.post('/trigger_csv_export')
+                .then(response => {
+                    // Immediately show that the task is executed
+                    document.getElementById("status-message").innerText = 
+                        "CSV export is being executed. You will receive an email once completed.";
+                })
+                .catch(error => {
+                    document.getElementById("status-message").innerText = 
+                        "Error: " + error.response.data.error;
+                });
+        });
+    </script>
+</body>
+</html>

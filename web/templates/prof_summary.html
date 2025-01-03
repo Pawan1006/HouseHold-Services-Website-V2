@@ -1,0 +1,63 @@
+{% extends "base.html" %} {% block title %}Professional Summary{% endblock  %}
+
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='summary.css') }}">
+{% endblock %}
+
+
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="professional-dashboard">Welcome! {{prof.full_name}}</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/professional-dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/prof-search">Search</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/prof-summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+{% block content %}
+<br>
+<!-- Statistical charts -->
+<div id="app" class="summary-page">
+    <h2>Statistical Chart</h2>
+    <br>
+    <div class="text-center">
+        <div class="row">
+            <div class="col-md-6">
+                <img :src="serviceChart" alt="Service rquests Status Chart" class="img-fluid">
+            </div>
+            <div class="col-md-6">
+                <img :src="ratingChart" alt="Rating Chart" class="img-fluid">
+            </div>
+        </div>
+    </div>
+    <br><br>
+</div>
+<script>
+    new Vue({
+        el: '#app',
+        data(){
+            return{
+                serviceChart: "/service/chart",
+                ratingChart: "/rating/chart"
+            };
+        }
+    });
+</script>
+{% endblock %}

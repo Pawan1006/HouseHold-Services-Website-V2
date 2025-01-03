@@ -1,0 +1,83 @@
+ {% extends "base.html" %} {% block title %}Admin Summary{% endblock  %}
+
+
+{% block head %}
+<!-- Link to the CSS file for styling the summary page -->
+<link rel="stylesheet" href="{{ url_for('static', filename='summary.css') }}">
+{% endblock %}
+
+
+{% block navbar %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/admin/dashboard">Welcome! Admin</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbar">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="home" href="/admin/dashboard">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="search" href="/admin/search">Search</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">
+                  Status
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" id="customer_status" href="/customer/status">Customer Status</a>
+                    <a class="dropdown-item" id="professional_status" href="/professional/status">Professional Status</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="summary" href="/admin/summary">Summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="logout" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock  %}
+
+{% block content %}
+<div id="app" class="summary-page">
+    <h2>Statistical Chart</h2></br>
+    <div class="text-center">
+        <div class="row">
+            <div class="col-md-6">
+                <img :src="profChart" alt="Professional Status Chart" class="img-fluid">
+            </div>
+            <div class="col-md-6">
+                <img :src="custChart" alt="Customer Status Chart" class="img-fluid">
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-6">
+                <img :src="reqChart" alt="Request Status Chart" class="img-fluid">
+            </div>
+            <div class="col-md-6">
+                <img :src="ratingChart" alt="Average Ratings Chart" class="img-fluid">
+            </div>
+        </div>
+    </div>
+    <br></br>
+</div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data(){
+            return{
+                profChart: '/chart/prof_status',
+                custChart: '/chart/cust_status',
+                reqChart: '/chart/request_status',
+                ratingChart: '/chart/average_rating'
+            };
+        }
+    });
+</script>
+{% endblock  %}
